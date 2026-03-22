@@ -31,7 +31,7 @@ jobs:
             cd ~/frappe-bench
             
             # Get the app from the specific branch that was pushed
-            bench get-app --branch erpnext-v16 https://github.com/sadikhossainnub/erpnext.git
+            bench get-app --overwrite --branch erpnext-v16 https://github.com/sadikhossainnub/erpnext.git
             
             # Run database migrations
             bench migrate
