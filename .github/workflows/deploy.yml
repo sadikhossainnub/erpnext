@@ -25,7 +25,7 @@ jobs:
           script: |
             # Navigate to your frappe-bench directory
             # Make sure this path is correct for your VPS
-            cd /home/frappe/frappe-bench
+            cd /frappe-bench
             
             # Pull updates for erpnext app
             bench update --pull --apps erpnext
