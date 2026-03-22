@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - erpnext-v16
-      # Add more branches here if needed, e.g.:
-      # - develop
-      # - main
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -30,14 +27,11 @@ jobs:
             export PATH=$PATH:/home/dressup/.local/bin:/usr/local/bin
             cd ~/frappe-bench
             
-            # Get the app from the specific branch that was pushed
+            # Get the app from the specific branch
             bench get-app --overwrite --branch erpnext-v16 https://github.com/sadikhossainnub/erpnext.git
             
-            # Run database migrations
-            bench migrate
+            # Run database migrations for site
+            bench --site erp.dressup.com.bd migrate
             
             # Clear cache
-            bench clear-cache
-            
-            # Restart bench services
-            bench restart
+            bench --site erp.dressup.com.bd clear-cache
