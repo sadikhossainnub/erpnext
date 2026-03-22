@@ -5,12 +5,15 @@ on:
     branches:
       - erpnext-v16
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code from GitHub
-        uses: actions/checkout@v4  # Upgraded to v4 to remove Node.js deprecation warning
+        uses: actions/checkout@v4
 
       - name: Deploy via SSH Password
         # Warning: Storing plain text password in this file is a security risk.
@@ -22,8 +25,8 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            # Navigate to your frappe-bench directory
-            cd /frappe-bench
+            # Navigate to your frappe-bench directory (Commonly in Home)
+            cd ~/frappe-bench
             
             # Pull updates for erpnext app
             bench update --pull --apps erpnext
