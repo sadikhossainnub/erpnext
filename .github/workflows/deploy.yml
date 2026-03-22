@@ -9,12 +9,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout Code from GitHub
+        uses: actions/checkout@v4  # Upgraded to v4 to remove Node.js deprecation warning
 
       - name: Deploy via SSH Password
         # Warning: Storing plain text password in this file is a security risk.
-        # It is highly recommended to use GitHub Secrets for this.
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: 85.190.254.51
@@ -24,7 +23,6 @@ jobs:
           script_stop: true
           script: |
             # Navigate to your frappe-bench directory
-            # Make sure this path is correct for your VPS
             cd /frappe-bench
             
             # Pull updates for erpnext app
