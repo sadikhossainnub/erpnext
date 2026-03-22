@@ -1,0 +1,40 @@
+name: ERPNext Deploy to VPS
+
+on:
+  push:
+    branches:
+      - erpnext-v16
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH Password
+        # Warning: Storing plain text password in this file is a security risk.
+        # It is highly recommended to use GitHub Secrets for this.
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 85.190.254.51
+          username: dressup
+          password: "701865"
+          port: 22
+          script_stop: true
+          script: |
+            # Navigate to your frappe-bench directory
+            # Make sure this path is correct for your VPS
+            cd /home/frappe/frappe-bench
+            
+            # Pull updates for erpnext app
+            bench update --pull --apps erpnext
+            
+            # Run database migrations
+            bench migrate
+            
+            # Clear cache
+            bench clear-cache
+            
+            # Restart bench services
+            bench restart
