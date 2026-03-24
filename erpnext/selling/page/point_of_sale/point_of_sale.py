@@ -521,6 +521,37 @@ def get_invoice_filters(doctype, status, name=None):
 
 
 @frappe.whitelist()
+def validate_discount_approval(approver_email, approver_password, pos_profile):
+	"""Validate approver credentials and role for discount approval in POS."""
+	from frappe.utils.password import check_password
+
+	# Authenticate the approver
+	try:
+		user = check_password(approver_email, approver_password)
+	except frappe.AuthenticationError:
+		frappe.throw(frappe._("Invalid approver credentials. Please check email and password."))
+
+	if not user:
+		frappe.throw(frappe._("Invalid approver credentials. Please check email and password."))
+
+	# Check if the approver has the required role
+	discount_approver_role = frappe.db.get_value(
+		"POS Profile", pos_profile, "discount_approver_role"
+	)
+
+	if discount_approver_role:
+		user_roles = frappe.get_roles(approver_email)
+		if discount_approver_role not in user_roles:
+			frappe.throw(
+				frappe._("User {0} does not have the required role '{1}' to approve discounts.").format(
+					approver_email, discount_approver_role
+				)
+			)
+
+	return {"success": True, "approver": approver_email}
+
+
+@frappe.whitelist()
 def get_customer_recent_transactions(customer):
 	sales_invoices = frappe.db.get_list(
 		"Sales Invoice",

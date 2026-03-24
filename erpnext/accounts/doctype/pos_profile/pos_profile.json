@@ -29,6 +29,8 @@
   "ignore_pricing_rule",
   "allow_rate_change",
   "allow_discount_change",
+  "max_discount_without_approval",
+  "discount_approver_role",
   "allow_coupon_code",
   "allow_gift_card",
   "allow_loyalty_point_redemption",
@@ -352,6 +354,21 @@
    "fieldname": "allow_discount_change",
    "fieldtype": "Check",
    "label": "Allow User to Edit Discount"
+  },
+  {
+   "depends_on": "eval:doc.allow_discount_change",
+   "description": "Discount percentage above this value will require approver authorization. Leave blank or 0 to require approval for all discounts.",
+   "fieldname": "max_discount_without_approval",
+   "fieldtype": "Percent",
+   "label": "Max Discount % Without Approval"
+  },
+  {
+   "depends_on": "eval:doc.allow_discount_change",
+   "description": "Users with this role can approve discounts above the threshold.",
+   "fieldname": "discount_approver_role",
+   "fieldtype": "Link",
+   "label": "Discount Approver Role",
+   "options": "Role"
   },
   {
    "default": "0",

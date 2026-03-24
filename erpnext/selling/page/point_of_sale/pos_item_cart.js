@@ -9,6 +9,9 @@ erpnext.PointOfSale.ItemCart = class {
 		this.allow_discount_change = settings.allow_discount_change;
 		this.allow_coupon_code = settings.allow_coupon_code;
 		this.allow_gift_card = settings.allow_gift_card;
+		this.max_discount_without_approval = flt(settings.max_discount_without_approval);
+		this.discount_approver_role = settings.discount_approver_role;
+		this.pos_profile = settings.name;
 		this.init_component();
 	}
 
@@ -426,22 +429,38 @@ erpnext.PointOfSale.ItemCart = class {
 				placeholder: discount ? discount + "%" : __("Enter discount percentage."),
 				input_class: "input-xs",
 				onchange: function () {
-					this.value = flt(this.value);
-					if (this.value > 100) {
+					const discount_value = flt(this.value);
+					this.value = discount_value;
+
+					if (discount_value > 100) {
 						frappe.msgprint({
 							title: __("Invalid Discount"),
 							indicator: "red",
 							message: __("Discount cannot be greater than 100%."),
 						});
 						this.value = 0;
+						return;
 					}
+
+					// Check if discount exceeds approval threshold
+					const needs_approval = me.discount_approver_role
+						&& discount_value > 0
+						&& discount_value > me.max_discount_without_approval;
+
+					if (needs_approval) {
+						// Discount exceeds threshold — require approval
+						me.show_discount_approval_dialog(discount_value, frm);
+						return;
+					}
+
+					// No approval needed — apply discount directly
 					frappe.model.set_value(
 						frm.doc.doctype,
 						frm.doc.name,
 						"additional_discount_percentage",
-						flt(this.value)
+						discount_value
 					);
-					me.hide_discount_control(this.value);
+					me.hide_discount_control(discount_value);
 				},
 			},
 			parent: this.$add_discount_elem.find(".add-discount-field"),
@@ -605,6 +624,94 @@ erpnext.PointOfSale.ItemCart = class {
 				await frappe.model.set_value(frm.doc.doctype, frm.doc.name, "loyalty_points", parseInt(amount / conversion_factor));
 
 				me.update_totals_section(frm);
+				dialog.hide();
+			},
+		});
+
+		dialog.show();
+	}
+
+	show_discount_approval_dialog(discount_value, frm) {
+		const me = this;
+		const dialog = new frappe.ui.Dialog({
+			title: __("Discount Approval Required"),
+			fields: [
+				{
+					fieldname: "approval_info",
+					fieldtype: "HTML",
+					options: `<div style="padding: 10px; background: var(--bg-orange); border-radius: 8px; margin-bottom: 12px;">
+						<div style="font-weight: 600; color: var(--text-color);">
+							${__("Discount of {0}% requires manager approval.", [discount_value])}
+						</div>
+						<div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+							${__("Maximum discount without approval: {0}%", [me.max_discount_without_approval])}
+						</div>
+					</div>`,
+				},
+				{
+					fieldname: "approver_email",
+					fieldtype: "Link",
+					options: "User",
+					label: __("Approver Email"),
+					reqd: 1,
+					get_query: function () {
+						return {
+							filters: { enabled: 1 },
+						};
+					},
+				},
+				{
+					fieldname: "approver_password",
+					fieldtype: "Password",
+					label: __("Approver Password"),
+					reqd: 1,
+				},
+			],
+			primary_action_label: __("Approve & Apply Discount"),
+			primary_action(values) {
+				frappe.call({
+					method: "erpnext.selling.page.point_of_sale.point_of_sale.validate_discount_approval",
+					args: {
+						approver_email: values.approver_email,
+						approver_password: values.approver_password,
+						pos_profile: me.pos_profile,
+					},
+					freeze: true,
+					freeze_message: __("Validating approver credentials..."),
+					callback: function (r) {
+						if (r.message && r.message.success) {
+							// Approval successful — apply the discount
+							frappe.model.set_value(
+								frm.doc.doctype,
+								frm.doc.name,
+								"additional_discount_percentage",
+								discount_value
+							);
+							me.hide_discount_control(discount_value);
+							dialog.hide();
+							frappe.show_alert({
+								message: __("Discount of {0}% approved by {1}.", [
+									discount_value,
+									r.message.approver,
+								]),
+								indicator: "green",
+							});
+						}
+					},
+					error: function () {
+						// Approval failed — do not apply discount
+						if (me.discount_field) {
+							me.discount_field.set_value(0);
+						}
+					},
+				});
+			},
+			secondary_action_label: __("Cancel"),
+			secondary_action() {
+				// User cancelled — revert discount field
+				if (me.discount_field) {
+					me.discount_field.set_value(0);
+				}
 				dialog.hide();
 			},
 		});
