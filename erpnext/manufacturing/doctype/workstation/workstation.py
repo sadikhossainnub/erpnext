@@ -49,9 +49,11 @@ class Workstation(Document):
 			WorkstationWorkingHour,
 		)
 
+		cpm: DF.Currency
 		description: DF.Text | None
 		disabled: DF.Check
 		holiday_list: DF.Link | None
+		hours_per_day: DF.Float
 		hour_rate: DF.Currency
 		off_status_image: DF.AttachImage | None
 		on_status_image: DF.AttachImage | None
@@ -60,6 +62,7 @@ class Workstation(Document):
 		status: DF.Literal["Production", "Off", "Idle", "Problem", "Maintenance", "Setup"]
 		total_working_hours: DF.Float
 		warehouse: DF.Link | None
+		working_days_per_month: DF.Int
 		working_hours: DF.Table[WorkstationWorkingHour]
 		workstation_costs: DF.Table[WorkstationCost]
 		workstation_name: DF.Data
@@ -108,10 +111,25 @@ class Workstation(Document):
 			frappe.throw(_("Row #{0}: Start Time must be before End Time").format(row.idx))
 
 	def set_hour_rate(self):
+		"""Calculate hourly rate and CPM from monthly costs.
+
+		Monthly Cost / (Working Days × Hours Per Day) = Hourly Cost
+		Hourly Cost / 60 = CPM (Cost Per Minute)
+		"""
+		working_days = flt(self.working_days_per_month) or 26
+		hours_per_day = flt(self.hours_per_day) or 10
+		total_monthly_hours = working_days * hours_per_day
+
 		self.hour_rate = 0.0
 		for row in self.workstation_costs:
-			if row.operating_cost:
+			monthly = flt(row.monthly_cost)
+			if monthly and total_monthly_hours:
+				row.operating_cost = flt(monthly / total_monthly_hours, 2)
 				self.hour_rate += flt(row.operating_cost)
+			else:
+				row.operating_cost = 0
+
+		self.cpm = flt(self.hour_rate / 60, 4) if self.hour_rate else 0
 
 	@frappe.whitelist()
 	def set_data_based_on_workstation_type(self):

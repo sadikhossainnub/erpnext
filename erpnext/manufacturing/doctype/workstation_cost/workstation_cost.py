@@ -14,6 +14,7 @@ class WorkstationCost(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		monthly_cost: DF.Currency
 		operating_component: DF.Link
 		operating_cost: DF.Currency
 		parent: DF.Data

@@ -19,6 +19,8 @@
   "column_break_3",
   "production_capacity",
   "warehouse",
+  "working_days_per_month",
+  "hours_per_day",
   "workstation_status_tab",
   "status",
   "column_break_glcv",
@@ -31,6 +33,7 @@
   "workstation_costs",
   "section_break_11",
   "hour_rate",
+  "cpm",
   "workstaion_description",
   "description",
   "working_hours_section",
@@ -62,16 +65,23 @@
   {
    "fieldname": "over_heads",
    "fieldtype": "Tab Break",
-   "label": "Operating Costs",
+   "label": "Operating Costs (Monthly)",
    "oldfieldtype": "Section Break"
   },
   {
-   "description": "per hour",
+   "description": "Auto-calculated from monthly costs",
    "fieldname": "hour_rate",
    "fieldtype": "Currency",
    "label": "Net Hour Rate",
    "oldfieldname": "hour_rate",
    "oldfieldtype": "Currency",
+   "read_only": 1
+  },
+  {
+   "description": "Cost Per Minute = Hour Rate / 60",
+   "fieldname": "cpm",
+   "fieldtype": "Currency",
+   "label": "Cost Per Minute (CPM)",
    "read_only": 1
   },
   {
@@ -103,6 +113,21 @@
   {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "26",
+   "description": "Working days per month for cost calculation",
+   "fieldname": "working_days_per_month",
+   "fieldtype": "Int",
+   "label": "Working Days / Month",
+   "non_negative": 1
+  },
+  {
+   "default": "10",
+   "description": "Working hours per day for cost calculation",
+   "fieldname": "hours_per_day",
+   "fieldtype": "Float",
+   "label": "Hours / Day"
   },
   {
    "collapsible": 1,
@@ -209,7 +234,7 @@
   {
    "fieldname": "section_break_auzm",
    "fieldtype": "Section Break",
-   "label": "Operating Costs (Per Hour)"
+   "label": "Operating Cost Components (Monthly)"
   },
   {
    "fieldname": "workstation_costs",

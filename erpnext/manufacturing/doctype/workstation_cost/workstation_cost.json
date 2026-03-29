@@ -7,15 +7,17 @@
  "engine": "InnoDB",
  "field_order": [
   "operating_component",
+  "monthly_cost",
   "operating_cost"
  ],
  "fields": [
   {
+   "description": "Auto-calculated from Monthly Cost",
    "fieldname": "operating_cost",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Operating Cost",
-   "reqd": 1
+   "label": "Hourly Cost",
+   "read_only": 1
   },
   {
    "fieldname": "operating_component",
@@ -23,6 +25,13 @@
    "in_list_view": 1,
    "label": "Operating Component",
    "options": "Workstation Operating Component",
+   "reqd": 1
+  },
+  {
+   "fieldname": "monthly_cost",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Monthly Cost",
    "reqd": 1
   }
  ],
