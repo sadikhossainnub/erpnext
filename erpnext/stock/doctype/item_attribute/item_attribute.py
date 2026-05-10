@@ -25,9 +25,8 @@ class ItemAttribute(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.stock.doctype.item_attribute_value.item_attribute_value import ItemAttributeValue
+		from frappe.types import DF
 
 		attribute_name: DF.Data
 		disabled: DF.Check

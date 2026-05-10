@@ -138,6 +138,7 @@
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Series",
    "options": "STO-ITEM-.YYYY.-",
    "set_only_once": 1
@@ -147,6 +148,7 @@
    "fieldname": "item_code",
    "fieldtype": "Data",
    "in_global_search": 1,
+   "in_list_view": 1,
    "label": "Item Code",
    "oldfieldname": "item_code",
    "oldfieldtype": "Data",
@@ -171,6 +173,7 @@
    "fieldname": "item_name",
    "fieldtype": "Data",
    "in_global_search": 1,
+   "in_list_view": 1,
    "label": "Item Name",
    "oldfieldname": "item_name",
    "oldfieldtype": "Data",
@@ -987,7 +990,7 @@
  "image_field": "image",
  "links": [],
  "make_attachments_public": 1,
- "modified": "2026-03-05 16:29:31.653447",
+ "modified": "2026-04-01 14:55:47.902345",
  "modified_by": "Administrator",
  "module": "Stock",
  "name": "Item",

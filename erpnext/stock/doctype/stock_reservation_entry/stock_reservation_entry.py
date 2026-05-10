@@ -21,9 +21,8 @@ class StockReservationEntry(Document):
 	from typing import TYPE_CHECKING
 
 	if TYPE_CHECKING:
-		from frappe.types import DF
-
 		from erpnext.stock.doctype.serial_and_batch_entry.serial_and_batch_entry import SerialandBatchEntry
+		from frappe.types import DF
 
 		amended_from: DF.Link | None
 		available_qty: DF.Float
@@ -32,15 +31,7 @@ class StockReservationEntry(Document):
 		delivered_qty: DF.Float
 		from_voucher_detail_no: DF.Data | None
 		from_voucher_no: DF.DynamicLink | None
-		from_voucher_type: DF.Literal[
-			"",
-			"Pick List",
-			"Purchase Receipt",
-			"Stock Entry",
-			"Work Order",
-			"Production Plan",
-			"Subcontracting Inward Order",
-		]
+		from_voucher_type: DF.Literal["", "Pick List", "Purchase Receipt", "Stock Entry", "Work Order", "Production Plan", "Subcontracting Inward Order"]
 		has_batch_no: DF.Check
 		has_serial_no: DF.Check
 		item_code: DF.Link | None
@@ -48,29 +39,13 @@ class StockReservationEntry(Document):
 		reservation_based_on: DF.Literal["Qty", "Serial and Batch"]
 		reserved_qty: DF.Float
 		sb_entries: DF.Table[SerialandBatchEntry]
-		status: DF.Literal[
-			"Draft",
-			"Partially Reserved",
-			"Reserved",
-			"Partially Delivered",
-			"Partially Used",
-			"Delivered",
-			"Cancelled",
-			"Closed",
-		]
+		status: DF.Literal["Draft", "Partially Reserved", "Reserved", "Partially Delivered", "Partially Used", "Delivered", "Cancelled", "Closed"]
 		stock_uom: DF.Link | None
 		transferred_qty: DF.Float
 		voucher_detail_no: DF.Data | None
 		voucher_no: DF.DynamicLink | None
 		voucher_qty: DF.Float
-		voucher_type: DF.Literal[
-			"",
-			"Sales Order",
-			"Work Order",
-			"Subcontracting Inward Order",
-			"Production Plan",
-			"Subcontracting Order",
-		]
+		voucher_type: DF.Literal["", "Sales Order", "Work Order", "Subcontracting Inward Order", "Production Plan", "Subcontracting Order", "Cost Estimation"]
 		warehouse: DF.Link | None
 	# end: auto-generated types
 
